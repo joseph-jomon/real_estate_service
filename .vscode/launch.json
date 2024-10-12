@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: Debug",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678 // Debugger port exposed from Docker Compose
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/app", // Your local project directory
+          "remoteRoot": "/app" // The directory inside the Docker container
+        }
+      ],
+      "justMyCode": false,
+      "logToFile": true
+    }
+  ]
+}

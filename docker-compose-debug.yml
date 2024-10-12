@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: real_estate_app_debug
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir app --log-level debug
+    ports:
+      - "8000:8000"
+      - "5678:5678" # Debugger port for IDE (optional, e.g., for VSCode or PyCharm)
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://your_db_user:your_db_password@db/your_db_name
+      - DEBUG=True  # Enable debug mode
+    volumes:
+      - .:/app
+      - ./data/images:/app/data/images  # Mount the data/images folder as a volume
+    networks:
+      - real_estate_net
+
+  db:
+    image: postgres:14
+    container_name: real_estate_db_debug
+    restart: always
+    environment:
+      POSTGRES_USER: your_db_user
+      POSTGRES_PASSWORD: your_db_password
+      POSTGRES_DB: your_db_name
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - real_estate_net
+
+volumes:
+  postgres_data:
+
+networks:
+  real_estate_net:

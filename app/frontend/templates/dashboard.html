@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #plotly-graph {
+            width: 100%;
+            height: 600px;
+            margin: 0 auto;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real Estate Dashboard</h1>
+    <div id="plotly-graph"></div>
+
+    <script type="text/javascript">
+        var data = {{ plotly_data | safe }};
+        Plotly.newPlot('plotly-graph', data, {responsive: true});
+    </script>
+
+    <footer>
+        <p>Interactive Data Visualization Powered by Plotly</p>
+    </footer>
+</body>
+</html>

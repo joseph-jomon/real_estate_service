@@ -1,0 +1,3 @@
+base_url: "https://api.production.cloudios.flowfact-prod.cloud"
+image_output_path: "./data/images/"
+batch_vector_api: "https://vectorizer-service-url"

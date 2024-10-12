@@ -1,0 +1,9 @@
+{
+  "python.pythonPath": "${workspaceFolder}/venv/bin/python", // Your virtual environment path (if using one)
+  "python.formatting.provider": "black", // Example: Auto format using Black
+  "editor.formatOnSave": true, // Auto format files on save
+  "files.autoSave": "onFocusChange", // Save files automatically when focus changes
+  "python.linting.enabled": true, // Enable linting for Python
+  "python.linting.pylintEnabled": true, // Enable pylint
+  "DockerRun.DisableDockerrc": true
+}
