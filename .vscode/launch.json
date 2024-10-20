@@ -7,7 +7,7 @@
       "request": "attach",
       "connect": {
         "host": "localhost",
-        "port": 5678 // Debugger port exposed from Docker Compose
+        "port": 5679 // Debugger port exposed from Docker Compose
       },
       "pathMappings": [
         {

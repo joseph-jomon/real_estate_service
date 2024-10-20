@@ -9,7 +9,7 @@ async def authenticate_api_key(api_key: str, request: Request):
         api_response = await client.get(url, headers=headers)
     
     if api_response.status_code == 200:
-        token = api_response.json().get('token')
+        token = api_response.text
         request.session['token'] = token  # Store token in session
         return token
     else:

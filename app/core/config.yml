@@ -1,3 +1,4 @@
 base_url: "https://api.production.cloudios.flowfact-prod.cloud"
 image_output_path: "./data/images/"
 batch_vector_api: "https://vectorizer-service-url"
+data_output_path: "./app/data/text/final_dataset.csv"  # Add this path for storing fetched data

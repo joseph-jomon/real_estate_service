@@ -2,20 +2,24 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     container_name: real_estate_app_debug
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir app --log-level debug
+    # Use wait-for-it.sh to wait until PostgreSQL is ready
+    command: [ "./scripts/wait-for-it.sh", "db:5432", "--", "python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app", "--log-level", "debug" ]
     ports:
       - "8000:8000"
-      - "5678:5678" # Debugger port for IDE (optional, e.g., for VSCode or PyCharm)
+      - "5679:5678" # Debugger port for IDE (optional, e.g., for VSCode or PyCharm)
+
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgresql://your_db_user:your_db_password@db/your_db_name
-      - DEBUG=True  # Enable debug mode
+      - DATABASE_URL=postgresql+asyncpg://your_db_user:your_db_password@db/your_db_name
+      - DEBUG=True # Enable debug mode
     volumes:
-      - .:/app
-      - ./data/images:/app/data/images  # Mount the data/images folder as a volume
+      - ./data/images:/app/data/images # Mount the data/images folder as a volume
+      - ./data/text:/app/data/text # Mount the data/images folder as a volume
     networks:
       - real_estate_net
 
@@ -36,6 +40,7 @@ services:
 
 volumes:
   postgres_data:
+
 
 networks:
   real_estate_net:

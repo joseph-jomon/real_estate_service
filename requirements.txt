@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+httpx
+sqlalchemy
+asyncpg
+jinja2
+passlib[bcrypt]
+pandas
+plotly
+psycopg2-binary
+python-dotenv
+itsdangerous  # Explicitly added for session management
+PyYAML  # Add this for YAML support
+python-multipart
+debugpy

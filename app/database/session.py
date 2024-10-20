@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Asynchronous PostgreSQL connection URL format: postgresql+asyncpg://user:password@host:port/database
-DATABASE_URL = "postgresql+asyncpg://your_db_user:your_db_password@localhost/your_db_name"
+DATABASE_URL = "postgresql+asyncpg://your_db_user:your_db_password@db/your_db_name"
 
 # Create the asynchronous engine
 engine = create_async_engine(DATABASE_URL, echo=True)
