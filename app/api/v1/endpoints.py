@@ -5,7 +5,10 @@ from app.services.authentication import authenticate_api_key
 from app.services.data_fetch import fetch_real_estate_data
 from app.services.image_service import validate_image_links
 from app.core.utils import save_to_dataframe
-from app.services.batch_processing import send_text_batch, send_image_batch, get_task_status
+from app.services.batch_processing import send_text_batch, send_image_batch
+from app.services.dataset_preparation import prepare_and_save_dataset
+from app.services.batch_processing import start_batch_processing
+
 from pydantic import BaseModel
 
 # Initialize Jinja2Templates (template directory is relative to the app's base path)
@@ -53,19 +56,23 @@ async def validate_images(token: str = Depends(authenticate_api_key)):
     invalid_ids = await validate_image_links(token)
     return {"invalid_ids": invalid_ids}
 
-# Process text and image batches
-@router.post("/process-text-batch/")
-async def process_text_batch(text_batch: list):
-    task_id = await send_text_batch(text_batch)
-    return {"task_id": task_id}
 
-@router.post("/process-image-batch/")
-async def process_image_batch(image_batch: list):
-    task_id = await send_image_batch(image_batch)
-    return {"task_id": task_id}
+@router.post("/prepare-dataset/")
+async def prepare_dataset(token: str = Depends(authenticate_api_key)):
+    try:
+        await prepare_and_save_dataset(token)
+        return {"message": "Dataset prepared successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Dataset preparation failed: {e}")
+
+@router.post("/start-batch-processing/")
+async def start_batch_processing_endpoint():
+    await start_batch_processing()
+    return {"message": "Batch processing started."}
+
 
 # Check task status
-@router.get("/task-status/{task_id}")
-async def task_status(task_id: str):
-    status = await get_task_status(task_id)
-    return {"status": status}
+#@router.get("/task-status/{task_id}")
+#async def task_status(task_id: str):
+#    status = await get_task_status(task_id)
+ #   return {"status": status}

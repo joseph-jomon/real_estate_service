@@ -10,7 +10,9 @@ class Settings:
         
         self.BASE_URL = config.get("base_url")
         self.IMAGE_OUTPUT_PATH = config.get("image_output_path")
-        self.BATCH_VECTOR_API = config.get("batch_vector_api")
         self.DATA_OUTPUT_PATH = config.get("data_output_path")  # New config value
+        self.DATA_OUTPUT_FOLDER = config.get("data_output_folder")  # New config value
+        self.BATCH_VECTOR_TEXT_API = config.get("batch_vector_text_api")
+        self.BATCH_VECTOR_IMAGE_API = config.get("batch_vector_image_api")
 
 settings = Settings()

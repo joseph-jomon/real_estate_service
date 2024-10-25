@@ -1,4 +1,6 @@
 base_url: "https://api.production.cloudios.flowfact-prod.cloud"
-image_output_path: "./data/images/"
-batch_vector_api: "https://vectorizer-service-url"
+image_output_path: "./app/data/images/"
 data_output_path: "./app/data/text/final_dataset.csv"  # Add this path for storing fetched data
+data_output_folder: "./app/data/text/"  
+batch_vector_text_api: "http://kundalin.com/process-text-batch/"
+batch_vector_image_api: "http://kundalin.com/process-image-batch/"
