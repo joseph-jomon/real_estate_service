@@ -4,12 +4,12 @@ from app.core.config import settings
 from app.services.image_downloader import download_images_from_filtered_data
 import asyncio
 
-async def load_invalid_ids():
+async def load_invalid_ids(company_name):
     """
     Loads the invalid IDs from the invalid_ids.csv file asynchronously.
     Returns the list of invalid IDs.
     """
-    invalid_ids_path = os.path.join(settings.DATA_OUTPUT_FOLDER, "invalid_ids.csv")
+    invalid_ids_path = os.path.join(settings.DATA_OUTPUT_FOLDER, company_name, "invalid_ids.csv")
     if os.path.exists(invalid_ids_path):
         invalid_ids_df = pd.read_csv(invalid_ids_path)
         return invalid_ids_df['id'].tolist()
@@ -42,11 +42,11 @@ async def prepare_text_data(filtered_df):
 
     return filtered_df
 
-async def add_image_paths(filtered_df, folder_path):
+async def add_image_paths(filtered_df, image_output_folder):
     """
     Adds the image paths to the filtered DataFrame asynchronously.
     """
-    filtered_df['Image'] = folder_path + filtered_df['id'] + "_image_1.jpg"
+    filtered_df['Image'] = image_output_folder + filtered_df['id'] + "_image_1.jpg"
     return filtered_df
 
 async def save_final_dataset(filtered_df, output_file):
@@ -56,32 +56,36 @@ async def save_final_dataset(filtered_df, output_file):
     filtered_df.to_csv(output_file, index=False)
     print(f"Final dataset saved to {output_file}")
 
-async def prepare_and_save_dataset(token: str):
+async def prepare_and_save_dataset(token: str, company_name: str):
     """
     Main async function to load the final dataset, remove invalid IDs, prepare text and image data,
     and save the cleaned dataset to a CSV. Then, download images for the filtered dataset.
     """
     try:
-        # Step 1: Load invalid IDs
-        invalid_ids = await load_invalid_ids()
+        # Step 1: Define company-specific paths
+        company_folder = os.path.join(settings.DATA_OUTPUT_FOLDER, company_name)
+        os.makedirs(company_folder, exist_ok=True)
+        final_dataset_path = os.path.join(company_folder, "final_dataset.csv")
+        output_file = os.path.join(company_folder, "filtered_final_dataset.csv")
+        image_output_folder = os.path.join(settings.IMAGE_OUTPUT_PATH, company_name)
+
+        # Step 2: Load invalid IDs
+        invalid_ids = await load_invalid_ids(company_name)
         
-        # Step 2: Load final dataset and filter out invalid IDs
-        final_dataset_path = os.path.join(settings.DATA_OUTPUT_FOLDER, "final_dataset.csv")
+        # Step 3: Load final dataset and filter out invalid IDs
         filtered_df = await filter_invalid_ids(final_dataset_path, invalid_ids)
         
-        # Step 3: Prepare text data
+        # Step 4: Prepare text data
         filtered_df = await prepare_text_data(filtered_df)
 
-        # Step 4: Add image paths
-        folder_path = settings.IMAGE_OUTPUT_PATH  # Image folder path from settings
-        filtered_df = await add_image_paths(filtered_df, folder_path)
+        # Step 5: Add image paths
+        filtered_df = await add_image_paths(filtered_df, image_output_folder + "/")
 
-        # Step 5: Save the final prepared dataset
-        output_file = os.path.join(settings.DATA_OUTPUT_FOLDER, "filtered_final_dataset.csv")
+        # Step 6: Save the final prepared dataset
         await save_final_dataset(filtered_df, output_file)
 
-        # Step 6: Download images for the filtered IDs
-        await download_images_from_filtered_data(filtered_df, token)
+        # Step 7: Download images for the filtered IDs
+        await download_images_from_filtered_data(filtered_df, token, company_name)
     
     except Exception as e:
         print(f"Error during dataset preparation: {e}")

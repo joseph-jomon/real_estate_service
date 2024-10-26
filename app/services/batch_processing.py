@@ -7,10 +7,11 @@ from app.core.config import settings
 
 BATCH_SIZE = 5  # You can adjust the batch size according to the service limits
 
-async def send_text_batch(text_batch):
+async def send_text_batch(company_name,text_batch):
     url = settings.BATCH_VECTOR_TEXT_API
     payload = {
-        "texts": [{"id": text_data["id"], "immo_text": text_data["Combined_Text"]} for text_data in text_batch]
+        "texts": [{"id": text_data["id"], "immo_text": text_data["Combined_Text"]} for text_data in text_batch],
+        "company_name":company_name
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(url, json=payload)
@@ -18,10 +19,11 @@ async def send_text_batch(text_batch):
             return response.json().get('task_id')
         raise Exception(f"Error sending text batch: {response.status_code}")
 
-async def send_image_batch(image_batch):
+async def send_image_batch(company_name, image_batch):
     url = settings.BATCH_VECTOR_IMAGE_API
     payload = {
-        "images": [{"id": image_data["id"], "image": image_data["base64_image"]} for image_data in image_batch]
+        "images": [{"id": image_data["id"], "image": image_data["base64_image"]} for image_data in image_batch],
+        "company_name": company_name
     }
     async with httpx.AsyncClient(timeout=120) as client:
         response = await client.post(url, json=payload)
@@ -29,9 +31,9 @@ async def send_image_batch(image_batch):
             return response.json().get('task_id')
         raise Exception(f"Error sending image batch: {response.status_code}")
 
-async def process_text_data_in_batches():
+async def process_text_data_in_batches(company_name):
     # Read the filtered dataset
-    dataset_path = os.path.join(settings.DATA_OUTPUT_FOLDER, "filtered_final_dataset.csv")
+    dataset_path = os.path.join(settings.DATA_OUTPUT_FOLDER, company_name, "filtered_final_dataset.csv")
     df = pd.read_csv(dataset_path)
 
     # Split into batches and send
@@ -40,9 +42,9 @@ async def process_text_data_in_batches():
         task_id = await send_text_batch(text_batch)
         print(f"Text batch starting from index {start_idx} sent with task ID: {task_id}")
 
-async def process_image_data_in_batches():
+async def process_image_data_in_batches(company_name):
     # Read the filtered dataset
-    dataset_path = os.path.join(settings.DATA_OUTPUT_FOLDER, "filtered_final_dataset.csv")
+    dataset_path = os.path.join(settings.DATA_OUTPUT_FOLDER,company_name, "filtered_final_dataset.csv")
     df = pd.read_csv(dataset_path)
 
     # Split into batches and process
@@ -64,18 +66,18 @@ async def process_image_data_in_batches():
 
         # Send the batch if there are images to process
         if image_batch:
-            task_id = await send_image_batch(image_batch)
+            task_id = await send_image_batch(company_name, image_batch)
             print(f"Image batch starting from index {start_idx} sent with task ID: {task_id}")
 
     print("All image batches have been processed.")
 
 # Orchestrator function to start both text and image batch processing
-async def start_batch_processing():
+async def start_batch_processing(company_name):
     print("Starting text batch processing...")
-    await process_text_data_in_batches()
+    await process_text_data_in_batches(company_name)
 
     print("Starting image batch processing...")
-    await process_image_data_in_batches()
+    await process_image_data_in_batches(company_name)
 
 # Call the main processing function from another service or API when needed.
 # Example: `asyncio.run(start_batch_processing(token))`

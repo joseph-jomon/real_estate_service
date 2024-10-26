@@ -4,20 +4,21 @@ import httpx
 from app.core.utils import check_image_url
 from app.core.config import settings
 
-async def validate_image_links(token: str):
+async def validate_image_links(token: str, company_name: str):
     invalid_ids = []
 
-    # Step 1: Read the CSV file and extract the 'id' column
-    csv_path = settings.DATA_OUTPUT_PATH
+    # Step 1: Define the company-specific CSV path and extract the 'id' column
+    csv_path = os.path.join(settings.DATA_OUTPUT_FOLDER, company_name, "final_dataset.csv")
     df = pd.read_csv(csv_path)
-    all_ids = df['id'].tolist()  # Load the IDs from previous data fetch, assuming the CSV has a column named 'id'
+    all_ids = df['id'].tolist()  # Load IDs from CSV, assuming it has a column named 'id'
 
     # Step 2: Validate image links for each ID
     async with httpx.AsyncClient() as client:
         for id in all_ids:
             url = f"{settings.BASE_URL}/entity-service/entities/{id}"
-            headers = {'cognitoToken': token,
-                        'Content-Type':'application/json',
+            headers = {
+                'cognitoToken': token,
+                'Content-Type': 'application/json',
             }
             response = await client.get(url, headers=headers)
             json_data = response.json()
@@ -31,8 +32,8 @@ async def validate_image_links(token: str):
                         invalid_ids.append(id)
                         break
     
-    # Step 3: Write the invalid IDs to a new CSV file in the same directory
-    invalid_ids_path = os.path.join(os.path.dirname(csv_path), "invalid_ids.csv")
+    # Step 3: Write invalid IDs to a company-specific CSV file in the same directory
+    invalid_ids_path = os.path.join(settings.DATA_OUTPUT_FOLDER, company_name, "invalid_ids.csv")
     invalid_ids_df = pd.DataFrame(invalid_ids, columns=["id"])
     
     try:

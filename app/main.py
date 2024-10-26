@@ -22,11 +22,6 @@ app.add_middleware(
 
 # Get the base directory dynamically using pathlib
 BASE_DIR = Path(__file__).resolve().parent # Adjust depending on your structure
-print(f"Serving static files from: {BASE_DIR / 'frontend' / 'static'}")
-
-
-# Serve the static folder
-app.mount("/static", StaticFiles(directory=BASE_DIR / "frontend" / "static"), name="static")
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")

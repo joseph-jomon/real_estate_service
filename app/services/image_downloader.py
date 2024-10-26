@@ -16,15 +16,14 @@ CONCURRENCY_LIMIT = 50  # Max number of simultaneous requests
 # Semaphore to limit concurrent downloads
 semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
 
-async def download_images_from_filtered_data(filtered_df, token: str):
+async def download_images_from_filtered_data(filtered_df, token: str, company_name: str):
     """
-    Downloads images for each ID in the filtered DataFrame and saves them to the output folder.
+    Downloads images for each ID in the filtered DataFrame and saves them to the company's output folder.
     Handles retries, timeouts, and error logging.
     """
     api_endpoint = f'{settings.BASE_URL}/entity-service/entities'
-    output_folder = settings.IMAGE_OUTPUT_PATH  # Get the image output path from settings
-
-    # Create the output folder if it doesn't exist
+    # Create company-specific output folder
+    output_folder = os.path.join(settings.IMAGE_OUTPUT_PATH, company_name)
     os.makedirs(output_folder, exist_ok=True)
 
     async def download_image_for_row(row):
@@ -42,11 +41,10 @@ async def download_images_from_filtered_data(filtered_df, token: str):
                         # Make API call to fetch the image links for the given ID
                         response = await client.get(f'{api_endpoint}/{id_value}', headers=headers, timeout=TIMEOUT)
 
-                        # Check if request was successful
                         if response.status_code == 200:
                             json_data = response.json()
 
-                            # Assuming 'mainImage' contains the image links
+                            # Get image links
                             image_links = json_data.get('mainImage', {}).get('values', [])
                             if image_links:
                                 for index, link in enumerate(image_links):
@@ -89,4 +87,3 @@ async def download_images_from_filtered_data(filtered_df, token: str):
     await asyncio.gather(*tasks)
 
     logger.info(f"Finished downloading images for {len(filtered_df)} IDs.")
-
