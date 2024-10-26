@@ -39,7 +39,7 @@ async def process_text_data_in_batches(company_name):
     # Split into batches and send
     for start_idx in range(0, len(df), BATCH_SIZE):
         text_batch = df.iloc[start_idx:start_idx+BATCH_SIZE].to_dict(orient='records')
-        task_id = await send_text_batch(text_batch)
+        task_id = await send_text_batch(company_name,text_batch)
         print(f"Text batch starting from index {start_idx} sent with task ID: {task_id}")
 
 async def process_image_data_in_batches(company_name):
