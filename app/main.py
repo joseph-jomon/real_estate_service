@@ -10,7 +10,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 # Initialize FastAPI
-app = FastAPI()
+app = FastAPI(
+    title="Flowfact data pipeline Orchestrator Endpoint",
+    description="Major interface that the frontend interacts with for triggering data pipeline functions",
+    version="1.0.0",
+)
 
 app.add_middleware(
     CORSMiddleware,
