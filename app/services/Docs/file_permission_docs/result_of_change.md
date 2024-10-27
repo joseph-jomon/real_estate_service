@@ -1,0 +1,3 @@
+With `drwxr-xr-x 4 10001 10001 4096 Oct 27 16:12 ./data`, your `./data` directory is now owned by the `appuser` (UID `10001`), with read, write, and execute permissions for the owner. This setup should allow the `appuser` in your container to create and modify subdirectories within `./data` without running into permissions errors.
+
+You can now try running your application again. If the `os.makedirs(company_folder, exist_ok=True)` command still throws an error, please check the logs for any additional details. Otherwise, it should work smoothly with this permission setup.

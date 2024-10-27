@@ -1,9 +1,13 @@
 import httpx
 from fastapi import Request, HTTPException
 from app.core.config import settings
+import re
 
 def sanitize_company_name(company_name: str) -> str:
-    return company_name.strip().replace(" ", "_").lower()
+    # Remove any non-alphanumeric characters except underscores
+    sanitized_name = re.sub(r'[^a-zA-Z0-9_]', '', company_name)
+    # Replace spaces with underscores and convert to lowercase
+    return sanitized_name.strip().replace(" ", "_").lower() 
 
 async def authenticate_api_key(api_key: str, request: Request):
     url = "https://api.production.cloudios.flowfact-prod.cloud/admin-token-service/public/adminUser/authenticate"
