@@ -68,7 +68,7 @@ async def prepare_dataset(request: Request, token: str = Depends(authenticate_ap
 
 # Start batch processing for text and image data
 @router.post("/start-batch-processing/")
-async def start_batch_processing_endpoint(request: Request):
+async def start_batch_processing_endpoint(request: Request, token: str = Depends(authenticate_api_key)):
     try:
         # Retrieve company name from session
         company_name = request.session.get('company_name')
