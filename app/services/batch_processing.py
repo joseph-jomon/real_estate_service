@@ -5,7 +5,7 @@ import base64
 import asyncio  # Adding asyncio for orchestrating the batch processes
 from app.core.config import settings
 
-BATCH_SIZE = 50  # You can adjust the batch size according to the service limits
+BATCH_SIZE = 10  # You can adjust the batch size according to the service limits
 
 async def send_text_batch(company_name,text_batch):
     url = settings.BATCH_VECTOR_TEXT_API
